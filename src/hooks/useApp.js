@@ -1,22 +1,21 @@
 import {
-  collection,
+
   addDoc,
   serverTimestamp,
   getDocs,
   query,
   orderBy,
-  doc,
-  setDoc,
   getDoc,
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
+import { doc, setDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
 import useStore from "../store";
 import { useNavigate } from "react-router-dom";
 
-const useApp = () => {
+const useApp = () => {  
   const navigate = useNavigate();
   const {
     currentUser: { uid },
@@ -69,52 +68,48 @@ const useApp = () => {
   };
 
 const createBoard = async ({ name, color }) => {
-    try {
-    const doc = await addDoc(boardsColRef, {
-      name,
-      color,
-      createdAt: serverTimestamp(),
-    });
-    await setDoc(doc(db, `users/${uid}/boardsData/${doc.id}`), {
-      tabs: [
+    
+    const docRef = await addDoc(boardsColRef, {
+  name,
+  color,
+  createdAt: serverTimestamp(),
+});
+await setDoc(doc(db, `users/${uid}/boardsData/${docRef.id}`), {
+  tabs: [
+    {
+      id: "todo",
+      name: "To Do",
+      cards: [
         {
-          id: "todo",
-          name: "To Do",
-          cards: [
-            {
-              id: "sample-task-1",
-              title: "Welcome to FlowBoard!",
-              description: "This is your first task. Click to edit or drag it around.",
-              dueDate: null,
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        },
-        {
-          id: "inprogress",
-          name: "In Progress",
-          cards: [],
-        },
-        {
-          id: "done",
-          name: "Done",
-          cards: [],
+          id: "sample-task-1",
+          title: "Welcome to FlowBoard!",
+          description: "This is your first task. Click to edit or drag it around.",
+          dueDate: null,
+          createdAt: new Date().toISOString(),
         },
       ],
-      lastUpdated: serverTimestamp(),
-    });
-    addBoard({
-      name,
-      color,
-      createdAt: new Date().toLocaleString("en-US"),
-      id: doc.id,
-    });
-    } catch (err) {
-      setToastr("Error creating board");
-      throw err;
-    }
-  };
+    },
+    {
+      id: "inprogress",
+      name: "In Progress",
+      cards: [],
+    },
+    {
+      id: "done",
+      name: "Done",
+      cards: [],
+    },
+  ],
+  lastUpdated: serverTimestamp(),
+});
 
+addBoard({
+  name,
+  color,
+  createdAt: new Date().toLocaleString("en-US"),
+  id: docRef.id,
+});
+};
   const fetchBoards = async (setLoading) => {
     try {
       const q = query(boardsColRef, orderBy("createdAt", "desc"));

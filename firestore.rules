@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Boards List
+    match /users/{userId}/boards/{boardId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Boards Data
+    match /users/{userId}/boardsData/{boardId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

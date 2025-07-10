@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { Grid } from "@mui/material";
 import AddTaskModal from "./AddTaskModal";
-
 import BoardTab from "./BoardTab";
 import useApp from "../../hooks/useApp";
 import useStore from "../../store";
@@ -35,17 +34,15 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
     []
   );
 
-  console.log({ shiftTask });
-
   const handleShiftTask = async (newStatus) => {
     const oldStatus = shiftTask.status;
     if (newStatus === oldStatus) return setShiftTask(null);
     const dClone = structuredClone(tabs);
 
-    // remove the el from arr 1
-    const [task] = dClone[oldStatus].splice(shiftTask.index, 1);
+    if (!Array.isArray(dClone[oldStatus])) return setToastr("Source column not found.");
+    if (!Array.isArray(dClone[newStatus])) dClone[newStatus] = [];
 
-    // add it to the arr 2
+    const [task] = dClone[oldStatus].splice(shiftTask.index, 1);
     dClone[newStatus].unshift(task);
 
     try {
@@ -69,7 +66,11 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
   const handleRemoveTask = useCallback(
     async (tab, taskId) => {
       const dClone = structuredClone(tabs);
+      if (!Array.isArray(dClone[tab])) return;
+
       const taskIdx = dClone[tab].findIndex((t) => t.id === taskId);
+      if (taskIdx === -1) return;
+
       dClone[tab].splice(taskIdx, 1);
 
       try {
@@ -85,8 +86,15 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
 
   const handleAddTask = async (text) => {
     if (!text.trim()) return setToastr("Task cannot be empty!");
+
     const dClone = structuredClone(tabs);
-    dClone[addTaskTo].unshift({ text, id: crypto.randomUUID() });
+    if (!Array.isArray(dClone[addTaskTo])) dClone[addTaskTo] = [];
+
+    dClone[addTaskTo].unshift({
+      text,
+      id: crypto.randomUUID(),
+    });
+
     try {
       await handleUpdateBoardData(dClone);
       setAddTaskTo("");
@@ -106,12 +114,14 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
       return;
 
     const dClone = structuredClone(tabs);
+    const from = source.droppableId;
+    const to = destination.droppableId;
 
-    // remove the task from tab 1
-    const [draggedTask] = dClone[source.droppableId].splice(source.index, 1);
+    if (!Array.isArray(dClone[from])) return;
+    if (!Array.isArray(dClone[to])) dClone[to] = [];
 
-    // add it to the tab 2
-    dClone[destination.droppableId].splice(destination.index, 0, draggedTask);
+    const [draggedTask] = dClone[from].splice(source.index, 1);
+    dClone[to].splice(destination.index, 0, draggedTask);
 
     try {
       await handleUpdateBoardData(dClone);
@@ -123,6 +133,7 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
   };
 
   if (loading) return <AppLoader />;
+
   return (
     <>
       {!!shiftTask && (
@@ -147,7 +158,7 @@ const BoardInterface = ({ boardData, boardId, updateLastUpdated }) => {
             <BoardTab
               key={status}
               status={status}
-              tasks={tabs[status]}
+              tasks={tabs[status] || []}
               name={statusMap[status]}
               openAddTaskModal={handleOpenAddTaskModal}
               openShiftTaskModal={handleOpenShiftTaskModal}

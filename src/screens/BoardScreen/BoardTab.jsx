@@ -21,15 +21,18 @@ const BoardTab = ({
   console.log("Tab: ", name);
   const isXs = useMediaQuery((theme) => theme.breakpoints.only("xs"));
   return (
-    <Droppable droppableId={status}>
+    <Droppable droppableId={status} isCombineEnabled={false} isDropDisabled={false}>
       {(provided) => (
         <Grid
-          {...provided.droppableProps}
-          ref={provided.innerRef}
-          item
-          xs={12}
-          sm={4}
-        >
+  {...provided.droppableProps}
+  ref={provided.innerRef}
+  item
+  xs={12}
+  sm={4}
+   md={6}
+  lg={4}
+  sx={{ minWidth:480, maxWidth: 1000 }}
+>
           <Stack p={3} bgcolor="#000">
             <Stack
               direction="row"
@@ -44,7 +47,7 @@ const BoardTab = ({
               </IconButton>
             </Stack>
             <Stack mt={3} spacing={2}>
-              {tasks.map((task, index) => (
+              {tasks?.map((task, index) => (
                 <Task
                   onClick={
                     isXs

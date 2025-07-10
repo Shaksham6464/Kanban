@@ -24,7 +24,7 @@ export const auth = getAuth(app);
 export const fbFunctions = getFunctions(app);
 export const db = getFirestore(app);
 if (process.env.NODE_ENV === "development") {
- //  connectAuthEmulator(auth, "http://localhost:9099");
-  // connectFirestoreEmulator(db, "localhost", 8082);
+  // connectAuthEmulator(auth, "http://localhost:9099");
+  // connectFirestoreEmulator(db, "localhost", 8081);
   // connectFunctionsEmulator(fbFunctions, "localhost", 5002);
 }
