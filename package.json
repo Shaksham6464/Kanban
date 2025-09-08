@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-      "fb-emulators": "firebase emulators:start --import=./fb-emulator --export-on-exit"
+    "fb-emulators": "firebase emulators:start --import=./fb-emulator --export-on-exit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -17,9 +17,11 @@
     "@mui/material": "^7.2.0",
     "firebase": "^11.10.0",
     "firebase-tools": "^14.9.0",
-    "react": "^19.1.0",
+    "razorpay": "^2.9.6",
+    "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
-    "react-dom": "^19.1.0",
+    "react-dom": "^18.3.1",
+    "react-razorpay": "^3.0.1",
     "react-router-dom": "^7.6.3",
     "zustand": "^5.0.6"
   },
